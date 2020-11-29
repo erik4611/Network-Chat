@@ -12,6 +12,7 @@ public class Network {
     private static final int SERVER_PORT = 8189;
     private final String host;
     private final int port;
+
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
 
@@ -23,19 +24,21 @@ public class Network {
         return dataInputStream;
     }
 
+    public Network() {
+        this(SERVER_ADRESS, SERVER_PORT);
+    }
+
     public Network(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    public Network() {
-        this(SERVER_ADRESS, SERVER_PORT);
-    }
+
 
     public boolean connect() {
 
         try {
-            Socket socket = new Socket("localHost", 8189);
+            Socket socket = new Socket(host, port);
 
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -56,15 +59,21 @@ public class Network {
         }
     }
 
-    public void waitMessage(Controller viewController){
-        Thread thread = new Thread(() -> {
-            while (true) {
-                //String message = dataInputStream.readUTF();
-                viewController.addWordToList();
+    public void waitMessage(Controller controller) {
+
+        Thread thread = new Thread( () -> {
+            try { while (true) {
+
+                String message = dataInputStream.readUTF();
+                controller.appendMessage(message);
 
             }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Соединение потеряно!");
+            }
         });
-
-
+        thread.setDaemon(true);
+        thread.start();
     }
 }

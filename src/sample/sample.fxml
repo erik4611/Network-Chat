@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -39,12 +40,12 @@
    <bottom>
       <HBox prefHeight="55.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="inputField" onAction="#addWordToList" prefHeight="48.0" prefWidth="447.0">
+            <TextField fx:id="inputField" prefHeight="48.0" prefWidth="447.0">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <Button fx:id="startButton" mnemonicParsing="false" onAction="#addWordToList" prefHeight="98.0" prefWidth="130.0" text="Button">
+            <Button fx:id="startButton" mnemonicParsing="false" prefHeight="98.0" prefWidth="130.0" text="Button">
                <font>
                   <Font name="ISOCPEUR" size="18.0" />
                </font>
@@ -58,7 +59,10 @@
          </BorderPane.margin>
       </HBox>
    </bottom>
+   <left>
+      <ListView fx:id="usersList" prefHeight="468.0" prefWidth="135.0" BorderPane.alignment="CENTER" />
+   </left>
    <center>
-      <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <TextArea fx:id="chatHistory" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

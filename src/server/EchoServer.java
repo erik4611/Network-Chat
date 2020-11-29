@@ -14,39 +14,59 @@ public class EchoServer {
 
     public static void main(String[] args) {
 
+        new EchoServer().start();
+    }
 
-
-        try {
-            ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
-            System.out.println("Ожидаем подключения...");
-
+    private  void start() {
+        try(ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+            System.out.println("Ожидаем подключение...");
             Socket clientSocket = serverSocket.accept();
-
             System.out.println("Соединение установлено!");
 
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 
-            while (true) {
+            Thread inputThread = null;
 
-                String message = in.readUTF();
-                System.out.println("Сообщение пользователя: " + message);
-                Scanner scan = new Scanner(System.in);
-                System.out.println("В ответ на Ваше - заявляю:" + scan);
+            inputThread = runInputThread(in);
+            runOutputLoop(out);
 
+            System.out.println("Сервер остановлен.");
 
-                if (message.equals("/exit")) {
-                    break;
-                }
-                out.writeUTF("Ответ о сервера: " + message.toLowerCase());
-            }
-            System.out.println("Сервер остановлен");
-
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             System.out.println("Порт уже занят");
             e.printStackTrace();
         }
+    }
 
+    private Thread runInputThread(DataInputStream in) {
+        Thread thread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    String message = in.readUTF();
+                    System.out.println("Cообщение пользователя: " + message);
+                    if (message.equals("/exit")) {
+                        break;
+                    }
+                } catch (IOException e) {
+                    System.out.println("Connection was closed");
+                    break;
+                }
+            }
+        });
+        thread.start();
+        return thread;
+    }
 
+    private void runOutputLoop(DataOutputStream out) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String message = scanner.next();
+            out.writeUTF(message);
+            if (message.equals("/end")) {
+                break;
+            }
+        }
     }
 }
